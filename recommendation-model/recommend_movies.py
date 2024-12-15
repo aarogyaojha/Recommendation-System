@@ -1,34 +1,43 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from tensorflow.keras.models import load_model
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.layers import Dense, Embedding, Flatten, Dropout, Concatenate, Input
+from tensorflow.keras.callbacks import EarlyStopping
+import tensorflow as tf
 
 # Load datasets
-titles = pd.read_csv('titles.csv')  # Replace with your dataset path
-credits = pd.read_csv('credits.csv')  # Replace with your dataset path
+titles = pd.read_csv('../datsets/titles.csv')
+credits = pd.read_csv('../datsets/credits.csv')
 
-# Combine and preprocess datasets
-movies = titles.merge(credits, on='id', how='inner')
-movies = movies[['id', 'title', 'genres', 'production_countries', 'release_year']]
+# Preprocess datasets
+# Parse 'genres' and 'production_countries'
+for column in ['genres', 'production_countries']:
+    titles[column] = titles[column].apply(lambda x: eval(x) if pd.notna(x) else [])
+    titles[column] = titles[column].apply(lambda x: ','.join(x))
 
-# Add mock data for 'mood', 'weather', 'environment'
-movies['mood'] = np.random.choice(['happy', 'sad', 'exciting', 'romantic', 'scary'], len(movies))
-movies['weather'] = np.random.choice(['sunny', 'rainy', 'snowy', 'cloudy'], len(movies))
-movies['environment'] = np.random.choice(['home', 'theater', 'outdoor'], len(movies))
-movies['origin'] = np.random.choice(['Hollywood', 'Bollywood'], len(movies))
+# Fill missing values for 'age_certification'
+titles['age_certification'] = titles['age_certification'].fillna('Unknown')
 
-# Encode categorical variables
+# Initialize LabelEncoders
 label_encoders = {}
-for col in ['genres', 'mood', 'weather', 'environment', 'origin']:
+for col in ['type', 'genres', 'production_countries', 'age_certification']:
     le = LabelEncoder()
-    movies[col] = le.fit_transform(movies[col])
+    titles[col] = le.fit_transform(titles[col])
     label_encoders[col] = le
+
+# Normalize 'runtime'
+scaler = StandardScaler()
+titles['runtime'] = scaler.fit_transform(titles[['runtime']])
+
+# Select relevant columns
+movies = titles[['type', 'genres', 'production_countries', 'runtime', 'age_certification', 'title']]
 
 # Load the trained model
 model = load_model('movie_recommender_model.h5')
 print("Model loaded!")
 
-# Function to recommend movies using the model
+# Function to recommend movies using the model with decoded output
 def recommend_advanced(input_data):
     prediction = model.predict([
         np.array([input_data[0]]), 
@@ -38,25 +47,45 @@ def recommend_advanced(input_data):
         np.array([input_data[4]])
     ])
     top_indices = np.argsort(prediction[0])[-5:][::-1]  # Get top 5 recommendations
-    return movies.iloc[top_indices][['title', 'genres', 'mood', 'weather', 'environment', 'origin']]
+
+    # Retrieve the top movies
+    recommendations = movies.iloc[top_indices].copy()
+
+    # Decode categorical columns
+    for col in ['type', 'genres', 'production_countries', 'age_certification']:
+        recommendations[col] = label_encoders[col].inverse_transform(recommendations[col])
+
+    return recommendations[['title', 'type', 'genres', 'production_countries', 'runtime', 'age_certification']]
+
+# Function to encode user preferences with checks for unseen labels
+# Function to encode user preferences with proper handling for runtime
+def encode_user_input(preferences, label_encoders, scaler):
+    user_input = []
+    for col, value in preferences.items():
+        if col == 'runtime':
+            # Scale runtime value
+            scaled_value = scaler.transform([[value]])[0][0]
+            user_input.append(scaled_value)
+        else:
+            try:
+                user_input.append(label_encoders[col].transform([value])[0])
+            except ValueError:
+                print(f"Warning: '{value}' is an unseen label for {col}. Defaulting to the first label.")
+                user_input.append(0)  # Default to the first label if unseen
+    return user_input
+
 
 # Example user preferences
 preferences = {
-    'genres': 'Comedy',
-    'mood': 'Happy',
-    'weather': 'Sunny',
-    'environment': 'Outdoor',
-    'origin': 'Bollywood'
+    'type': 'SHOW',
+    'genres': 'thriller',
+    'production_countries': 'IN',
+    'runtime': 120,
+    'age_certification': 'PG-13'
 }
 
 # Encode user preferences
-user_input = [
-    label_encoders['genres'].transform([preferences['genres']])[0],
-    label_encoders['mood'].transform([preferences['mood'].lower()])[0],
-    label_encoders['weather'].transform([preferences['weather'].lower()])[0],
-    label_encoders['environment'].transform([preferences['environment'].lower()])[0],
-    label_encoders['origin'].transform([preferences['origin']])[0]
-]
+user_input = encode_user_input(preferences, label_encoders, scaler)
 
 # Provide Recommendations
 print("Recommendations:")
