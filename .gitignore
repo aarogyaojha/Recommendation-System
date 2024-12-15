@@ -2,6 +2,7 @@
 
 # dependencies
 ./netflix-client/node_modules/
+./gemini-server/node_modules/
 ./netflix-server/node_modules/
 /.pnp
 .pnp.js
