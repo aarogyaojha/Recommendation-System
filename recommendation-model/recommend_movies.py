@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import requests
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Dense, Embedding, Flatten, Dropout, Concatenate, Input
@@ -7,8 +8,8 @@ from tensorflow.keras.callbacks import EarlyStopping
 import tensorflow as tf
 
 # Load datasets
-titles = pd.read_csv('../datsets/titles.csv')
-credits = pd.read_csv('../datsets/credits.csv')
+titles = pd.read_csv('../datasets/titles.csv')
+credits = pd.read_csv('../datasets/credits.csv')
 
 # Preprocess datasets
 # Parse 'genres' and 'production_countries'
@@ -75,18 +76,30 @@ def encode_user_input(preferences, label_encoders, scaler):
     return user_input
 
 
-# Example user preferences
-preferences = {
-    'type': 'SHOW',
-    'genres': 'thriller',
-    'production_countries': 'IN',
-    'runtime': 120,
-    'age_certification': 'PG-13'
-}
+# Fetch preferences dynamically from the Node.js API
+try:
+    api_url = "http://your-nodejs-api-link.com/preferences"  # Replace with your API link
+    response = requests.get(api_url)
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    preferences = response.json()  # Parse JSON response
+    print("Fetched Preferences:", preferences)
 
-# Encode user preferences
-user_input = encode_user_input(preferences, label_encoders, scaler)
+    # Encode user preferences
+    user_input = encode_user_input(preferences, label_encoders, scaler)
 
-# Provide Recommendations
-print("Recommendations:")
-print(recommend_advanced(user_input))
+    # Provide recommendations
+    recommendations = recommend_advanced(user_input)
+    print("Recommendations:")
+    print(recommendations)
+
+    # Convert recommendations to JSON-friendly format
+    recommendations_json = recommendations.to_dict(orient='records')
+
+    # Send recommendations back to the API
+    post_response = requests.post(api_url, json={"recommendations": recommendations_json})
+    post_response.raise_for_status()  # Raise an exception for HTTP errors
+    print("Recommendations sent to API. Response:")
+    print(post_response.json())
+
+except requests.exceptions.RequestException as e:
+    print(f"Error fetching preferences from API: {e}")

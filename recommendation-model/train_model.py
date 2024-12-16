@@ -7,7 +7,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 import tensorflow as tf
 
 # Load datasets
-titles = pd.read_csv('../datasets/titles.scv')
+titles = pd.read_csv('../datasets/titles.csv')
 credits = pd.read_csv('../datasets/credits.csv')
 
 # Preprocess datasets
@@ -93,4 +93,4 @@ model.fit(X, Y, epochs=30, batch_size=32, validation_split=0.2, callbacks=[early
 
 # Save the trained model
 model.save('movie_recommender_model.h5')
-print("Model training complete and saved!")
+print("Model training complete and saved!")
