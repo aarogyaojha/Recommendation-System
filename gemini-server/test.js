@@ -21,7 +21,10 @@ async function extractKeywordsBatch(responses) {
 
     // Generate content using the model
     const result = await model.generateContent(prompt);
-      
+
+    // Debugging the response structure
+    console.log("API Raw Response:", JSON.stringify(result, null, 2));
+
     // Safely access the response content
     const responseParts = result.response?.candidates?.[0]?.content?.parts;
 
@@ -54,6 +57,21 @@ async function extractKeywordsBatch(responses) {
   }
 }
 
-// Export the function for usage in API routes
-module.exports = { extractKeywordsBatch };
+// Example usage
+(async () => {
+  const responses = [
+    {
+      question:
+        "Alright, let’s start with the basics. Are you in the mood for a quick movie or a binge-worthy show?",
+      answer: "i can watch a movie",
+    },
+    {
+      question:
+        "Now, tell me—how are you feeling right now? Your mood sets the tone for the kind of experience you’ll love.",
+      answer: "i am feeling happy today",
+    },
+  ];
 
+  const keywords = await extractKeywordsBatch(responses);
+  console.log("Final Keywords Mapping:", JSON.stringify(keywords, null, 2));
+})();

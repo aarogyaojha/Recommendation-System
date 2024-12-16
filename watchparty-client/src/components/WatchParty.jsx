@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "../assets/styles.css"; // Tailwind CSS will be used for styles
 
 const WatchParty = () => {
@@ -7,6 +8,7 @@ const WatchParty = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const hasWelcomedRef = useRef(false); // Ref to track if the welcome message has been spoken
+  const navigate = useNavigate();
   
 
   const questions = [
@@ -88,6 +90,7 @@ const WatchParty = () => {
             answer: [...answers, transcript][index] || "No response",
           }));
           sendResponsesToApi(allResponses);
+          navigate("/recommendation");
         }
       });
     };

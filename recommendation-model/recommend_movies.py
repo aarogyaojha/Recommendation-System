@@ -80,135 +80,30 @@ def encode_user_input(preferences, label_encoders, scaler):
     return user_input
 
 
+# Fetch preferences dynamically from the Node.js API
+try:
+    api_url = "http://your-nodejs-api-link.com/preferences"  # Replace with your API link
+    response = requests.get(api_url)
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    preferences = response.json()  # Parse JSON response
+    print("Fetched Preferences:", preferences)
 
-def transform_preferences(api_data):
-    preferences = {
-        'type': 'MOVIE',  # Default to MOVIE
-        'genres': '',
-        'production_countries': '',
-        'runtime': 120,  # Default to 120 minutes
-        'age_certification': 'PG-13'  # Always set to PG-13
-    }
-    
-    # Ensure there are at least 5 responses
-    if len(api_data) >= 5:
-       # First response: Type (movie or show)
-        first_response = api_data[0]
-        keywords = first_response.get('keywords', [])
-        # Convert keywords to lowercase for case-insensitive matching
-        keywords_lower = [k.lower() for k in keywords]
-        
-        if '[movie]' in keywords_lower:
-            preferences['type'] = 'MOVIE'
-        elif '[show]' in keywords_lower:
-            preferences['type'] = 'SHOW'
-        
-        # Third response: Genres
-        # Third response: Genres (case-insensitive check)
-        third_response = api_data[2]
-        keywords = third_response.get('keywords', [])
-        # Convert keywords to lowercase and remove brackets, then join them as a comma-separated list
-        genres = ', '.join([k.strip('[]').lower() for k in keywords])
-        preferences['genres'] = genres
-
-       # Fourth response: Production countries (case-insensitive check)
-        fourth_response = api_data[3]
-        keywords = fourth_response.get('keywords', [])
-        # Convert keywords to lowercase for case-insensitive matching
-        keywords_lower = [k.lower() for k in keywords]
-        
-        if '[hollywood]' in keywords_lower:
-            preferences['production_countries'] = 'US'
-        elif '[bollywood]' in keywords_lower:
-            preferences['production_countries'] = 'IN'
-        
-        # Fifth response: Runtime
-         # Fifth response: Runtime
-        fifth_response = api_data[4]
-        keywords = fifth_response.get('keywords', [])
-        runtime_match = None
-        
-        # Look for numeric values in the keywords for runtime (in minutes)
-        for keyword in keywords:
-            runtime_match = re.search(r'(\d+)', keyword)  # Regex to find numbers
-            if runtime_match:
-                preferences['runtime'] = int(runtime_match.group(1))  # Assign the first number found as runtime
-                break  # Exit after finding the first valid number
-        
-        # If no number is found, fallback to the default runtime (120 minutes)
-        if not runtime_match:
-            preferences['runtime'] = 120  # Default runtime
-            
-    # Ensure no leading/trailing spaces and handle empty fields
-    preferences['genres'] = preferences['genres'].strip() if preferences['genres'] else 'action'  # Default genre
-    preferences['production_countries'] = preferences['production_countries'].strip() if preferences['production_countries'] else 'US'  # Default country
-    
-    return preferences
-
-# # Fetch preferences dynamically from the Node.js API
-# try:
-#     api_url = "http://your-nodejs-api-link.com/preferences"  # Replace with your API link
-#     response = requests.get(api_url)
-#     response.raise_for_status()  # Raise an exception for HTTP errors
-#     api_data = response.json()  # Parse JSON response
-#     print("Fetched Preferences:", api_data)
-
-#     # Transform preferences
-#     preferences = transform_preferences(api_data)
-#     print("Transformed Preferences:", preferences)
-
-#     # Encode user preferences (assuming you have this function defined)
-#     user_input = encode_user_input(preferences, label_encoders, scaler)
-
-#     # Provide recommendations (assuming you have this function defined)
-#     recommendations = recommend_advanced(user_input)
-#     print("Recommendations:")
-#     print(recommendations)
-
-#     # Convert recommendations to JSON-friendly format
-#     recommendations_json = recommendations.to_dict(orient='records')
-
-#     # Send recommendations back to the API
-#     post_response = requests.post(api_url, json={"recommendations": recommendations_json})
-#     post_response.raise_for_status()  # Raise an exception for HTTP errors
-#     print("Recommendations sent to API. Response:")
-#     print(post_response.json())
-
-# except requests.exceptions.RequestException as e:
-#     print(f"Error fetching preferences from API: {e}")
-
-# Test Data (simulating the API response)
-api_data = [
-    {  # First response: Type (movie or show)
-        'question': 'Alright, let’s start with the basics. Are you in the mood for a quick movie or a binge-worthy show?',
-        'keywords': ['[show]']
-    },
-    {  # Second response: (This one is ignored as per the instructions)
-        'question': 'Now, tell me—how are you feeling right now? Your mood sets the tone for the kind of experience you’ll love.',
-        'keywords': ['[happy]']
-    },
-    {  # Third response: Genres
-        'question': 'Alright, let’s talk genres. What are you in the mood for? Something thriller, romantic, or maybe a comedy?',
-        'keywords': ['[Comedy, thriller]']
-    },
-    {  # Fourth response: Production countries
-        'question': 'Do you have a preference for where the content comes from? Are we talking Hollywood or Bollywood?',
-        'keywords': ['[hollywood]']
-    },
-    {  # Fifth response: Runtime
-        'question': 'One last thing—how much time do you have? Are you up for something epic, or do you need a shorter watch? just tell in minutes',
-        'keywords': ['[more than 180 minutes]']
-    }
-]
-
-# Transform preferences based on hardcoded data
-preferences = transform_preferences(api_data)
-    # Encode user preferences (assuming you have this function defined)
-user_input = encode_user_input(preferences, label_encoders, scaler)
+    # Encode user preferences
+    user_input = encode_user_input(preferences, label_encoders, scaler)
 
     # Provide recommendations
-recommendations = recommend_advanced(user_input)
-recommendations_json = recommendations.to_dict(orient='records')
-# print("Recommendations:")
+    recommendations = recommend_advanced(user_input)
+    print("Recommendations:")
+    print(recommendations)
 
-print(recommendations_json)
+    # Convert recommendations to JSON-friendly format
+    recommendations_json = recommendations.to_dict(orient='records')
+
+    # Send recommendations back to the API
+    post_response = requests.post(api_url, json={"recommendations": recommendations_json})
+    post_response.raise_for_status()  # Raise an exception for HTTP errors
+    print("Recommendations sent to API. Response:")
+    print(post_response.json())
+
+except requests.exceptions.RequestException as e:
+    print(f"Error fetching preferences from API: {e}")
