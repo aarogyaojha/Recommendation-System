@@ -2,69 +2,146 @@ import { signOut } from "firebase/auth";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { FaPlay } from "react-icons/fa";
+import { FaSearch, FaPowerOff } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import { firebaseAuth } from "../utils/firebase-config";
-import { FaPowerOff, FaSearch } from "react-icons/fa";
+
 export default function Navbar({ isScrolled }) {
   const [showSearch, setShowSearch] = useState(false);
   const [inputHover, setInputHover] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+
   const links = [
     { name: "Home", link: "/" },
     { name: "TV Shows", link: "/tv" },
     { name: "Movies", link: "/movies" },
     { name: "My List", link: "/mylist" },
-    { name: "Watch Party", link: "http://localhost:5173/watchparty" },
   ];
 
+  const handleSwitch = () => {
+    setShowLoader(true);
+    setTimeout(() => {
+      window.location.href = "http://localhost:5173/watchparty";
+    }, 5000);
+  };
+
   return (
-    <Container>
-      <nav className={`${isScrolled ? "scrolled" : ""} flex`}>
-        <div className="left flex a-center">
-          <div className="brand flex a-center j-center">
-            <img src={logo} alt="Logo" />
+    <>
+      {showLoader && (
+        <LoaderContainer>
+          <div className="loader-content">
+            <div className="blinking-text">Switching to Watch Party!</div>
+            <div className="progress-bar">
+              <div className="progress"></div>
+            </div>
           </div>
-          <ul className="links flex">
-            {links.map(({ name, link }) => {
-              return (
+        </LoaderContainer>
+      )}
+      <Container>
+        <nav className={`${isScrolled ? "scrolled" : ""} flex`}>
+          <div className="left flex a-center">
+            <div className="brand flex a-center j-center">
+              <img src={logo} alt="Logo" />
+            </div>
+            <ul className="links flex">
+              {links.map(({ name, link }) => (
                 <li key={name}>
                   <Link to={link}>{name}</Link>
                 </li>
-              );
-            })}
-          </ul>
-        </div>
-        <div className="right flex a-center">
-          <div className={`search ${showSearch ? "show-search" : ""}`}>
-            <button
-              onFocus={() => setShowSearch(true)}
-              onBlur={() => {
-                if (!inputHover) {
-                  setShowSearch(false);
-                }
-              }}
-            >
-              <FaSearch />
-            </button>
-            <input
-              type="text"
-              placeholder="Search"
-              onMouseEnter={() => setInputHover(true)}
-              onMouseLeave={() => setInputHover(false)}
-              onBlur={() => {
-                setShowSearch(false);
-                setInputHover(false);
-              }}
-            />
+              ))}
+            </ul>
           </div>
-          <button onClick={() => signOut(firebaseAuth)}>
-            <FaPowerOff />
-          </button>
-        </div>
-      </nav>
-    </Container>
+          <div className="right flex a-center">
+            <button className="gradient-button" onClick={handleSwitch}>
+              Switch to Watch Party!
+            </button>
+            <div className={`search ${showSearch ? "show-search" : ""}`}>
+              <button
+                onFocus={() => setShowSearch(true)}
+                onBlur={() => {
+                  if (!inputHover) {
+                    setShowSearch(false);
+                  }
+                }}
+              >
+                <FaSearch />
+              </button>
+              <input
+                type="text"
+                placeholder="Search"
+                onMouseEnter={() => setInputHover(true)}
+                onMouseLeave={() => setInputHover(false)}
+                onBlur={() => {
+                  setShowSearch(false);
+                  setInputHover(false);
+                }}
+              />
+            </div>
+            <button onClick={() => signOut(firebaseAuth)}>
+              <FaPowerOff />
+            </button>
+          </div>
+        </nav>
+      </Container>
+    </>
   );
 }
+
+const LoaderContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+
+  .loader-content {
+    text-align: center;
+
+    .blinking-text {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      animation: blink 1s linear infinite;
+    }
+
+    .progress-bar {
+      width: 300px;
+      height: 10px;
+      background: #555;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 1rem;
+
+      .progress {
+        width: 0;
+        height: 100%;
+        background: red;
+        animation: load 5s linear forwards;
+      }
+    }
+  }
+
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes load {
+    to {
+      width: 100%;
+    }
+  }
+`;
 
 const Container = styled.div`
   .scrolled {
@@ -153,6 +230,23 @@ const Container = styled.div`
           opacity: 1;
           visibility: visible;
           padding: 0.3rem;
+        }
+      }
+        .gradient-button {
+        background: red;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        
+        &:hover {
+          transform: scale(1.05);
+          box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
         }
       }
     }
