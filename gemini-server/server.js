@@ -18,6 +18,10 @@ app.use(bodyParser.json());
 // In-memory storage for demonstration purposes
 let responsesStorage = [];
 
+// Variable to store the data
+let storedData = [];
+
+
 // Temporary storage for the keyword mapping
 let keywordMappingCache = [];
 
@@ -100,6 +104,23 @@ app.get("/api/get-responses", (req, res) => {
 
   // Send the cached responses
   res.status(200).json({ questionsAndKeywords: keywordMappingCache });
+});
+
+// POST API to store the data
+app.post("/api/data", (req, res) => {
+  const { body } = req;
+  
+  if (!Array.isArray(body)) {
+    return res.status(400).json({ error: "Invalid input. Expected an array." });
+  }
+
+  storedData = body; // Store the data sent from the frontend
+  res.status(200).json({ message: "Data received and stored successfully." });
+});
+
+// GET API to retrieve the data
+app.get("/api/data", (req, res) => {
+  res.status(200).json({ data: storedData });
 });
 
 // Start the server

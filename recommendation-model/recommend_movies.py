@@ -147,7 +147,7 @@ def transform_preferences(api_data):
 
 # # Fetch preferences dynamically from the Node.js API
 try:
-    api_url = "http://your-nodejs-api-link.com/preferences"  # Replace with your API link
+    api_url = "http://localhost:5000/api/get-responses"  # Replace with your API link
     response = requests.get(api_url)
     response.raise_for_status()  # Raise an exception for HTTP errors
     api_data = response.json()  # Parse JSON response
@@ -167,48 +167,14 @@ try:
 
     # Convert recommendations to JSON-friendly format
     recommendations_json = recommendations.to_dict(orient='records')
+    print("Recommendations JSON:", recommendations_json)
 
+    api_url_post = "http://localhost:5000/api/data"  # Replace with your API link
     # Send recommendations back to the API
-    post_response = requests.post(api_url, json={"recommendations": recommendations_json})
+    post_response = requests.post(api_url_post, json={"recommendations": recommendations_json})
     post_response.raise_for_status()  # Raise an exception for HTTP errors
     print("Recommendations sent to API. Response:")
     print(post_response.json())
 
 except requests.exceptions.RequestException as e:
     print(f"Error fetching preferences from API: {e}")
-
-# Test Data (simulating the API response)
-api_data = [
-    {  # First response: Type (movie or show)
-        'question': 'Alright, let’s start with the basics. Are you in the mood for a quick movie or a binge-worthy show?',
-        'keywords': ['[show]']
-    },
-    {  # Second response: (This one is ignored as per the instructions)
-        'question': 'Now, tell me—how are you feeling right now? Your mood sets the tone for the kind of experience you’ll love.',
-        'keywords': ['[happy]']
-    },
-    {  # Third response: Genres
-        'question': 'Alright, let’s talk genres. What are you in the mood for? Something thriller, romantic, or maybe a comedy?',
-        'keywords': ['[Comedy, thriller]']
-    },
-    {  # Fourth response: Production countries
-        'question': 'Do you have a preference for where the content comes from? Are we talking Hollywood or Bollywood?',
-        'keywords': ['[hollywood]']
-    },
-    {  # Fifth response: Runtime
-        'question': 'One last thing—how much time do you have? Are you up for something epic, or do you need a shorter watch? just tell in minutes',
-        'keywords': ['[more than 180 minutes]']
-    }
-]
-
-# Transform preferences based on hardcoded data
-preferences = transform_preferences(api_data)
-    # Encode user preferences (assuming you have this function defined)
-user_input = encode_user_input(preferences, label_encoders, scaler)
-
-    # Provide recommendations
-recommendations = recommend_advanced(user_input)
-recommendations_json = recommendations.to_dict(orient='records')
-# print("Recommendations:")
-
-print(recommendations_json)
