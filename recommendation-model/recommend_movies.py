@@ -75,31 +75,44 @@ def encode_user_input(preferences, label_encoders, scaler):
                 user_input.append(0)  # Default to the first label if unseen
     return user_input
 
+preferences={
+    'type': 'MOVIE',
+    'genres': 'action, thriller',
+    'production_countries': 'US',
+    'runtime': 120,
+    'age_certification': 'PG-13',
+}
 
-# Fetch preferences dynamically from the Node.js API
-try:
-    api_url = "http://your-nodejs-api-link.com/preferences"  # Replace with your API link
-    response = requests.get(api_url)
-    response.raise_for_status()  # Raise an exception for HTTP errors
-    preferences = response.json()  # Parse JSON response
-    print("Fetched Preferences:", preferences)
-
-    # Encode user preferences
-    user_input = encode_user_input(preferences, label_encoders, scaler)
+user_input = encode_user_input(preferences, label_encoders, scaler)
 
     # Provide recommendations
-    recommendations = recommend_advanced(user_input)
-    print("Recommendations:")
-    print(recommendations)
+recommendations = recommend_advanced(user_input)
+print("Recommendations:")
+print(recommendations)
+# Fetch preferences dynamically from the Node.js API
+# try:
+#     api_url = "http://your-nodejs-api-link.com/preferences"  # Replace with your API link
+#     response = requests.get(api_url)
+#     response.raise_for_status()  # Raise an exception for HTTP errors
+#     preferences = response.json()  # Parse JSON response
+#     print("Fetched Preferences:", preferences)
 
-    # Convert recommendations to JSON-friendly format
-    recommendations_json = recommendations.to_dict(orient='records')
+#     # Encode user preferences
+#     user_input = encode_user_input(preferences, label_encoders, scaler)
 
-    # Send recommendations back to the API
-    post_response = requests.post(api_url, json={"recommendations": recommendations_json})
-    post_response.raise_for_status()  # Raise an exception for HTTP errors
-    print("Recommendations sent to API. Response:")
-    print(post_response.json())
+#     # Provide recommendations
+#     recommendations = recommend_advanced(user_input)
+#     print("Recommendations:")
+#     print(recommendations)
 
-except requests.exceptions.RequestException as e:
-    print(f"Error fetching preferences from API: {e}")
+#     # Convert recommendations to JSON-friendly format
+#     recommendations_json = recommendations.to_dict(orient='records')
+
+#     # Send recommendations back to the API
+#     post_response = requests.post(api_url, json={"recommendations": recommendations_json})
+#     post_response.raise_for_status()  # Raise an exception for HTTP errors
+#     print("Recommendations sent to API. Response:")
+#     print(post_response.json())
+
+# except requests.exceptions.RequestException as e:
+#     print(f"Error fetching preferences from API: {e}")

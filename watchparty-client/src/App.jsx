@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from "react-route
 import WatchParty from "./components/WatchParty";
 import SearchMovie from "./components/SearchMovie";
 import "./assets/styles.css"; // Tailwind CSS should be included in your build system
+import Recommendation from "./components/Recommendation";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -48,6 +49,7 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/watchparty" element={<WatchParty />} />
         <Route exact path="/search" element={<SearchMovie />} />
+        <Route exact path="/recommendation" element={<Recommendation />} />
       </Routes>
     </Router>
   );

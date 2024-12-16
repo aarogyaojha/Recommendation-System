@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const axios = require('axios');
 require('dotenv').config();
+const { extractKeywordsBatch  } = require('./gemeni.js');
+
 
 const app = express();
 const PORT = 5000;
@@ -15,6 +17,9 @@ app.use(bodyParser.json());
 
 // In-memory storage for demonstration purposes
 let responsesStorage = [];
+
+// Temporary storage for the keyword mapping
+let keywordMappingCache = [];
 
 // Function to get location using IP
 async function getLocation() {
@@ -66,26 +71,35 @@ app.get('/api/weather', async (req, res) => {
   });
 });
 
-// POST API to handle user responses
-app.post("/api/save-responses", (req, res) => {
+// POST API to save responses and extract keywords
+app.post("/api/save-responses", async (req, res) => {
   const { responses } = req.body;
 
   if (!responses || !Array.isArray(responses)) {
     return res.status(400).json({ error: "Invalid request body. Expecting 'responses' array." });
   }
 
-  // Save responses to storage (or database in production)
-  responsesStorage.push(...responses);
+  try {
+    // Extract keywords and save to cache
+    const keywordMapping = await extractKeywordsBatch(responses);
+    keywordMappingCache = keywordMapping; // Save to in-memory cache
 
-  console.log("User responses received:", responses);
-  
-  // Send success response
-  res.status(200).json({ message: "Responses saved successfully!" });
+    // Send success response
+    res.status(200).json({ questionsAndKeywords: keywordMapping });
+  } catch (error) {
+    console.error("Error in saving responses:", error.message);
+    res.status(500).json({ error: "Failed to process responses." });
+  }
 });
 
-// GET API to retrieve saved responses (optional)
-app.get("/api/responses", (req, res) => {
-  res.status(200).json({ data: responsesStorage });
+// GET API to retrieve the saved responses
+app.get("/api/get-responses", (req, res) => {
+  if (keywordMappingCache.length === 0) {
+    return res.status(404).json({ error: "No responses found. Please save responses first." });
+  }
+
+  // Send the cached responses
+  res.status(200).json({ questionsAndKeywords: keywordMappingCache });
 });
 
 // Start the server
