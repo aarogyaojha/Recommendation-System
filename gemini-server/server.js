@@ -106,16 +106,17 @@ app.get("/api/get-responses", (req, res) => {
   res.status(200).json({ questionsAndKeywords: keywordMappingCache });
 });
 
-// POST API to store the data
+// POST API to accept and store data
 app.post("/api/data", (req, res) => {
-  const { body } = req;
+  const data = req.body; // Body of the request
   
-  if (!Array.isArray(body)) {
+  // Check if the data is an array
+  if (!Array.isArray(data)) {
     return res.status(400).json({ error: "Invalid input. Expected an array." });
   }
 
-  storedData = body; // Store the data sent from the frontend
-  res.status(200).json({ message: "Data received and stored successfully." });
+  storedData = data; // Store the array in memory
+  res.status(200).json({ message: "Data received and stored successfully." });
 });
 
 // GET API to retrieve the data

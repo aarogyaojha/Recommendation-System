@@ -170,11 +170,18 @@ try:
     print("Recommendations JSON:", recommendations_json)
 
     api_url_post = "http://localhost:5000/api/data"  # Replace with your API link
-    # Send recommendations back to the API
-    post_response = requests.post(api_url_post, json={"recommendations": recommendations_json})
-    post_response.raise_for_status()  # Raise an exception for HTTP errors
-    print("Recommendations sent to API. Response:")
-    print(post_response.json())
+    # Ensure recommendations_json is a list of dictionaries (array)
+    if not isinstance(recommendations_json, list):
+        print("Error: recommendations_json should be a list of dictionaries.")
+    else:
+        try:
+            # Send the recommendations directly (as an array)
+            post_response = requests.post(api_url_post, json=recommendations_json)
+            post_response.raise_for_status()  # Raise an exception for HTTP errors
+            print("Recommendations sent to API. Response:")
+            print(post_response.json())
+        except requests.exceptions.RequestException as e:
+            print(f"Error sending recommendations to API: {e}")
 
 except requests.exceptions.RequestException as e:
     print(f"Error fetching preferences from API: {e}")
