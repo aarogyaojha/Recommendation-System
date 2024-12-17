@@ -6,6 +6,7 @@ import { RiThumbUpFill, RiThumbDownFill } from "react-icons/ri";
 import { BiChevronDown } from "react-icons/bi";
 import { BsCheck } from "react-icons/bs";
 import "../assets/Recommendation.css";
+import "../App.css"
 
 const Recommendation = () => {
   const [loading, setLoading] = useState(true);
@@ -103,8 +104,8 @@ const Recommendation = () => {
           </div>
         </div>
       ) : (
-        <div className="recommendation-content">
-          <h1>Movie Recommendations</h1>
+        <div className="recommendation-content mt-[2rem]">
+          <h1 className="text-white font-bold text-[2.5rem] mb-[2rem]">Movie Recommendations</h1>
           {error ? (
             <p>{error}</p>
           ) : (
@@ -132,9 +133,7 @@ const Card = ({ movieData }) => {
       <img src={movieData.poster || "https://via.placeholder.com/200x300"} alt={movieData.title} />
       {isHovered && (
         <div className="hover">
-          <div className="image-video-container">
-            <img src={movieData.poster} alt={movieData.title} />
-          </div>
+          <img src={movieData.poster || "https://via.placeholder.com/200x300"} alt={movieData.title} /> 
           <div className="info-container">
             <h3>{movieData.title}</h3>
             <div className="icons">
@@ -159,18 +158,22 @@ const MovieGrid = styled.div`
 
 const Container = styled.div`
   position: relative;
-  width: 230px;
+  width: 250px;
   cursor: pointer;
 
   img {
     width: 100%;
     border-radius: 0.3rem;
   }
+  
+    h1 {
+    margin-left: 50px;
+  }
 
   .hover {
     position: absolute;
-    top: -18vh;
-    width: 20rem;
+    top: 0vh;
+    width: 100%;
     background-color: #181818;
     border-radius: 0.3rem;
     box-shadow: rgba(0, 0, 0, 0.75) 0px 3px 10px;
@@ -186,6 +189,8 @@ const Container = styled.div`
       h3 {
         margin-bottom: 0.5rem;
         color: white;
+        font-weight: bold;
+        text-align: left;
       }
 
       .icons {
