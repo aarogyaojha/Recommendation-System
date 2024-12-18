@@ -7,6 +7,10 @@ from tensorflow.keras.layers import Dense, Embedding, Flatten, Dropout, Concaten
 from tensorflow.keras.callbacks import EarlyStopping
 import tensorflow as tf
 import re 
+import time
+import sys  # Add this at the top of your script
+
+
 # Load datasets
 titles = pd.read_csv('../datasets/titles.csv')
 credits = pd.read_csv('../datasets/credits.csv')
@@ -35,7 +39,7 @@ titles['runtime'] = scaler.fit_transform(titles[['runtime']])
 movies = titles[['type', 'genres', 'production_countries', 'runtime', 'age_certification', 'title']]
 
 # Load the trained model
-model = load_model('movie_recommender_model.h5')
+model = load_model('C:/Users/arogy/OneDrive/Desktop/final-year-proj/Recommendation-System/recommendation-model/movie_recommender_model.h5')
 print("Model loaded!")
 
 # Function to recommend movies using the model with decoded output
@@ -145,43 +149,52 @@ def transform_preferences(api_data):
     
     return preferences
 
-# # Fetch preferences dynamically from the Node.js API
-try:
-    api_url = "http://localhost:5000/api/get-responses"  # Replace with your API link
-    response = requests.get(api_url)
-    response.raise_for_status()  # Raise an exception for HTTP errors
-    api_data = response.json()  # Parse JSON response
-    print("Fetched Preferences:", api_data)
 
-    # Transform preferences
-    preferences = transform_preferences(api_data)
-    print("Transformed Preferences:", preferences)
+# API endpoints
+api_url_get = "http://localhost:5000/api/get-responses"  # Replace with your API link
+api_url_post = "http://localhost:5000/api/data"  # Replace with your API link
 
-    # Encode user preferences (assuming you have this function defined)
-    user_input = encode_user_input(preferences, label_encoders, scaler)
+while True:
+    try:
+        # Fetch preferences dynamically from the API
+        response = requests.get(api_url_get)
+        response.raise_for_status()  # Raise an exception for HTTP errors
 
-    # Provide recommendations (assuming you have this function defined)
-    recommendations = recommend_advanced(user_input)
-    print("Recommendations:")
-    print(recommendations)
+        api_data = response.json()  # Parse JSON response
+        if api_data:  # Check if data is not empty
+            print("Fetched Preferences:", api_data)
 
-    # Convert recommendations to JSON-friendly format
-    recommendations_json = recommendations.to_dict(orient='records')
-    print("Recommendations JSON:", recommendations_json)
+            # Transform preferences
+            preferences = transform_preferences(api_data)
+            print("Transformed Preferences:", preferences)
 
-    api_url_post = "http://localhost:5000/api/data"  # Replace with your API link
-    # Ensure recommendations_json is a list of dictionaries (array)
-    if not isinstance(recommendations_json, list):
-        print("Error: recommendations_json should be a list of dictionaries.")
-    else:
-        try:
-            # Send the recommendations directly (as an array)
-            post_response = requests.post(api_url_post, json=recommendations_json)
-            post_response.raise_for_status()  # Raise an exception for HTTP errors
-            print("Recommendations sent to API. Response:")
-            print(post_response.json())
-        except requests.exceptions.RequestException as e:
-            print(f"Error sending recommendations to API: {e}")
+            # Encode user preferences
+            user_input = encode_user_input(preferences, label_encoders, scaler)
 
-except requests.exceptions.RequestException as e:
-    print(f"Error fetching preferences from API: {e}")
+            # Provide recommendations
+            recommendations = recommend_advanced(user_input)
+            print("Recommendations:")
+            print(recommendations)
+
+            # Convert recommendations to JSON-friendly format
+            recommendations_json = recommendations.to_dict(orient='records')
+            print("Recommendations JSON:", recommendations_json)
+
+            # Send recommendations to the API
+            try:
+                post_response = requests.post(api_url_post, json=recommendations_json)
+                post_response.raise_for_status()  # Raise an exception for HTTP errors
+                print("Recommendations sent to API. Response:")
+                print(post_response.json())
+                sys.exit()
+            except requests.exceptions.RequestException as e:
+                print(f"Error sending recommendations to API: {e}")
+
+        else:
+            print("No data received from API. Waiting for the next attempt...")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching preferences from API: {e}")
+
+    # Wait before the next API call
+    time.sleep(5)  # Adjust the interval as needed

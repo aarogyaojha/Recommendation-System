@@ -4,6 +4,8 @@ const cors = require("cors");
 const axios = require('axios');
 require('dotenv').config();
 const { extractKeywordsBatch  } = require('./gemeni.js');
+const { spawn } = require('child_process');
+const path = require('path');
 
 
 const app = express();
@@ -122,6 +124,32 @@ app.post("/api/data", (req, res) => {
 // GET API to retrieve the data
 app.get("/api/data", (req, res) => {
   res.status(200).json({ data: storedData });
+});
+
+// Define the API route
+app.get('/run-script', (req, res) => {
+  const pyProg = spawn('python', ['../recommendation-model/recommend_movies.py'], {
+    env: { ...process.env, TF_ENABLE_ONEDNN_OPTS: '0' }
+  });
+
+  let result = '';
+
+  pyProg.stdout.on('data', (data) => {
+    result += data.toString();
+  });
+
+  pyProg.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+
+  pyProg.on('close', (code) => {
+    console.log(`Child process exited with code ${code}`);
+    if (code === 0) {
+      res.status(200).send(result);
+    } else {
+      res.status(500).send('An error occurred while executing the script');
+    }
+  });
 });
 
 // Start the server

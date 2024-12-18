@@ -18,8 +18,14 @@ export default function Navbar({ isScrolled }) {
     { name: "My List", link: "/mylist" },
   ];
 
-  const handleSwitch = () => {
+  const handleSwitch = async () => {
     setShowLoader(true);
+    try {
+      const response = await axios.get('http://localhost:5000/run-python');
+      console.log(`Python Script Output: ${response.data.output}`);
+  } catch (error) {
+      console.error('Error executing script:', error);
+  }
     setTimeout(() => {
       window.location.href = "http://localhost:5173/watchparty";
     }, 5000);
