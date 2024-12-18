@@ -4,6 +4,9 @@ import WatchParty from "./components/WatchParty";
 import SearchMovie from "./components/SearchMovie";
 import "./assets/styles.css"; // Tailwind CSS should be included in your build system
 import Recommendation from "./components/Recommendation";
+import Player from "./components/Player";
+import Host from "./components/Host";
+import Feedback from "./components/Feedback";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +53,9 @@ const App = () => {
         <Route path="/watchparty" element={<WatchParty />} />
         <Route exact path="/search" element={<SearchMovie />} />
         <Route exact path="/recommendation" element={<Recommendation />} />
+        <Route exact path="/player" element={<Player />} />
+        <Route exact path="/host" element={<Host />} />
+        <Route exact path="/feedback" element={<Feedback />} />
       </Routes>
     </Router>
   );

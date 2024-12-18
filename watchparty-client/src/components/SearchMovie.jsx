@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import '../assets/movie.css';
 
 const SearchMovie = () => {
@@ -7,9 +8,13 @@ const SearchMovie = () => {
   const [error, setError] = useState('');
   const apiKey = 'f9b1e6ebe6809e2f826f852f064e3827'; // Replace with your TMDb API key
 
-  const fetchMovieDetails = async () => {
-    if (!movieName) {
-      setError('Please enter a movie name');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const movieTitle = queryParams.get('title'); // Extract movie title from URL query parameter
+
+  const fetchMovieDetails = async (title) => {
+    if (!title) {
+      setError('Movie title not provided.');
       return;
     }
 
@@ -18,7 +23,7 @@ const SearchMovie = () => {
 
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(movieName)}`
+        `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(title)}`
       );
 
       if (!response.ok) {
@@ -97,17 +102,23 @@ const SearchMovie = () => {
     }
   };
 
+  useEffect(() => {
+    if (movieTitle) {
+      setMovieName(movieTitle); // Set the movieName state
+      fetchMovieDetails(movieTitle); // Fetch movie details based on URL title
+    }
+  }, [movieTitle]);
+
+  useEffect(() => {
+    if (movieData) {
+      handlePlayPlot(); // Play the plot as soon as movie data is fetched
+    }
+  }, [movieData]);
+
   return (
     <div className="movie-details-container">
-      <h1>Movie Search</h1>
       <div className="search-box">
-        <input
-          type="text"
-          placeholder="Enter movie name"
-          value={movieName}
-          onChange={(e) => setMovieName(e.target.value)}
-        />
-        <button onClick={fetchMovieDetails}>Search</button>
+        {/* Removed input and button */}
       </div>
       {error && <p className="error-message">{error}</p>}
       {movieData && (
@@ -117,13 +128,6 @@ const SearchMovie = () => {
             alt={movieData.title}
             className="movie-poster"
           />
-          <div className="movie-info">
-            <h2>{movieData.title}</h2>
-            <p><strong>Release Date:</strong> {movieData.release_date}</p>
-            <p><strong>Rating:</strong> {movieData.vote_average} / 10</p>
-            <p><strong>Overview:</strong> {movieData.overview}</p>
-            <button onClick={handlePlayPlot}>Play Plot</button>
-          </div>
         </div>
       )}
     </div>

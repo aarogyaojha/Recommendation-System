@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { IoPlayCircleSharp } from "react-icons/io5";
 import { AiOutlinePlus } from "react-icons/ai";
 import { RiThumbUpFill, RiThumbDownFill } from "react-icons/ri";
-import { BiChevronDown } from "react-icons/bi";
-import { BsCheck } from "react-icons/bs";
 import "../assets/Recommendation.css";
-import "../App.css"
+import "../App.css";
 
 const Recommendation = () => {
   const [loading, setLoading] = useState(true);
@@ -52,6 +51,7 @@ const Recommendation = () => {
     }
   };
 
+  // Handle the loader and messages
   useEffect(() => {
     let messageIndex = 0;
 
@@ -61,29 +61,11 @@ const Recommendation = () => {
       messageIndex = (messageIndex + 1) % messages.length;
     }, 3000);
 
-    const fetchData = async () => {
-      try {
-        // Step 1: Fetch titles
-        const response = await fetch("http://localhost:5000/api/data");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const result = await response.json();
-        const titles = result.data.map((item) => item.title);
-
-        // Step 2: Fetch movie details
-        const movieDetails = await fetchMovieDetails(titles);
-        setMovies(movieDetails);
-      } catch (err) {
-        setError("Failed to load movie data.");
-      }
-    };
-
-    fetchData();
-
     // Hide loader after 20 seconds
     const loaderTimeout = setTimeout(() => {
       setLoading(false);
       clearInterval(messageInterval);
-    }, 20000);
+    }, 30000);
 
     // Cleanup on unmount
     return () => {
@@ -91,6 +73,29 @@ const Recommendation = () => {
       clearTimeout(loaderTimeout);
     };
   }, []);
+
+  // Fetch data after loader finishes
+  useEffect(() => {
+    if (!loading) {
+      const fetchData = async () => {
+        try {
+          // Step 1: Fetch titles
+          const response = await fetch("http://localhost:5000/api/data");
+          if (!response.ok) throw new Error("Failed to fetch data");
+          const result = await response.json();
+          const titles = result.data.map((item) => item.title);
+
+          // Step 2: Fetch movie details
+          const movieDetails = await fetchMovieDetails(titles);
+          setMovies(movieDetails);
+        } catch (err) {
+          setError("Failed to load movie data.");
+        }
+      };
+
+      fetchData();
+    }
+  }, [loading]);
 
   return (
     <div>
@@ -105,7 +110,9 @@ const Recommendation = () => {
         </div>
       ) : (
         <div className="recommendation-content mt-[2rem]">
-          <h1 className="text-white font-bold text-[2.5rem] mb-[2rem]">Movie Recommendations</h1>
+          <h1 className="text-white font-bold text-[2.5rem] mb-[2rem]">
+            Movie Recommendations
+          </h1>
           {error ? (
             <p>{error}</p>
           ) : (
@@ -124,20 +131,33 @@ const Recommendation = () => {
 // Card Component (reused with hover and styling)
 const Card = ({ movieData }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate(`/host?title=${encodeURIComponent(movieData.title)}`);
+  };
 
   return (
     <Container
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img src={movieData.poster || "https://via.placeholder.com/200x300"} alt={movieData.title} />
+      <img
+        src={movieData.poster || "https://via.placeholder.com/200x300"}
+        alt={movieData.title}
+        onClick={handleNavigate}
+      />
       {isHovered && (
         <div className="hover">
-          <img src={movieData.poster || "https://via.placeholder.com/200x300"} alt={movieData.title} /> 
+          <img
+            src={movieData.poster || "https://via.placeholder.com/200x300"}
+            alt={movieData.title}
+            onClick={handleNavigate}
+          />
           <div className="info-container">
             <h3>{movieData.title}</h3>
             <div className="icons">
-              <IoPlayCircleSharp title="Play" />
+              <IoPlayCircleSharp title="Play" onClick={handleNavigate} />
               <RiThumbUpFill title="Like" />
               <RiThumbDownFill title="Dislike" />
               <AiOutlinePlus title="Add to my list" />
@@ -165,8 +185,8 @@ const Container = styled.div`
     width: 100%;
     border-radius: 0.3rem;
   }
-  
-    h1 {
+
+  h1 {
     margin-left: 50px;
   }
 
