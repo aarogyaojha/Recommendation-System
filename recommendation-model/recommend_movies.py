@@ -39,7 +39,7 @@ titles['runtime'] = scaler.fit_transform(titles[['runtime']])
 movies = titles[['type', 'genres', 'production_countries', 'runtime', 'age_certification', 'title']]
 
 # Load the trained model
-model = load_model('C:/Users/arogy/OneDrive/Desktop/final-year-proj/Recommendation-System/recommendation-model/movie_recommender_model.h5')
+model = load_model('movie_recommender_model.h5')
 print("Model loaded!")
 
 # Function to recommend movies using the model with decoded output

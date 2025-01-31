@@ -3,8 +3,14 @@ import styled from "styled-components";
 import { BsArrowLeft } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import video from "../../public/video2.mp4";
+
 export default function Player() {
   const navigate = useNavigate();
+
+  // Function to handle navigation to feedback page
+  const handleFeedbackNavigation = () => {
+    navigate("/feedback"); // Replace "/feedback" with your actual feedback route
+  };
 
   return (
     <Container>
@@ -12,7 +18,14 @@ export default function Player() {
         <div className="back">
           <BsArrowLeft onClick={() => navigate(-1)} />
         </div>
-        <video src={video} autoPlay loop controls muted />
+        <video 
+          src={video} 
+          autoPlay 
+          loop={false} 
+          controls 
+          muted 
+          onEnded={handleFeedbackNavigation} 
+        />
       </div>
     </Container>
   );
