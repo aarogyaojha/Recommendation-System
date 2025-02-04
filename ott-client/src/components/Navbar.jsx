@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { FaSearch, FaPowerOff } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import { firebaseAuth } from "../utils/firebase-config";
+import axios from 'axios';
 
 export default function Navbar({ isScrolled }) {
   const [showSearch, setShowSearch] = useState(false);
