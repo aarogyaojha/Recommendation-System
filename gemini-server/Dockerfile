@@ -16,8 +16,5 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 5000
 
-# Set environment variables through .env
-RUN npm install dotenv
-
 # Start the application
 CMD [ "node", "server.js" ]
