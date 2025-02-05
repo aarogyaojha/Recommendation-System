@@ -21,3 +21,10 @@ services:
       - "5000:5000"
     environment:
       - NODE_ENV=production
+
+  python-script:
+    build: ./recommendation-model
+    volumes:
+      - ./recommendation-model:/app
+    environment:
+      - PYTHONUNBUFFERED=1
