@@ -10,8 +10,8 @@ import re
 import time
 import sys  # Add this at the top of your script
 # Load datasets
-titles = pd.read_csv('../datasets/titles.csv')
-credits = pd.read_csv('../datasets/credits.csv')
+titles = pd.read_csv('titles.csv')
+credits = pd.read_csv('credits.csv')
 # Preprocess datasets
 # Parse 'genres' and 'production_countries'
 for column in ['genres', 'production_countries']:
