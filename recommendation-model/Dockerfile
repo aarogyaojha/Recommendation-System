@@ -4,19 +4,18 @@ FROM python:3.10
 # Set the working directory
 WORKDIR /app
 
-# Copy only requirements first for caching
+# Copy only requirements.txt first for better caching
 COPY requirements.txt .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies inside a virtual environment
+RUN python -m venv /app/.venv && \
+    /app/.venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the app files
 COPY . .
 
-# Use a virtual environment (.venv)
-RUN python -m venv .venv && \
-    . .venv/bin/activate && \
-    pip install --no-cache-dir -r requirements.txt
+# Set the virtual environment as default for the container
+ENV PATH="/app/.venv/bin:$PATH"
 
-# Set the default command (modify as needed)
-CMD [".venv/bin/python", "final.py"]
+# Start the Python script
+CMD ["python", "final.py"]
