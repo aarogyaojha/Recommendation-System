@@ -22,7 +22,7 @@ export default function Navbar({ isScrolled }) {
   const handleSwitch = async () => {
     setShowLoader(true);
     try {
-      const response = await axios.get('http://soulfulswings.publicvm.com:5000/run-python');
+      const response = await axios.get('http://soulfulswings.publicvm.com/run-python');
       console.log(`Python Script Output: ${response.data.output}`);
   } catch (error) {
       console.error('Error executing script:', error);

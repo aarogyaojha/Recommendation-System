@@ -98,6 +98,12 @@ app.post("/api/save-responses", async (req, res) => {
   }
 });
 
+// Test API endpoint
+app.get("/api/test", (req, res) => {
+  res.send("Node.js is working!");
+});
+
+
 // GET API to retrieve the saved responses
 app.get("/api/get-responses", (req, res) => {
   if (keywordMappingCache.length === 0) {
