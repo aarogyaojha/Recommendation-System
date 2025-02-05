@@ -2,7 +2,6 @@
   "name": "watchparty",
   "private": true,
   "version": "0.0.0",
-  "homepage": "/ott",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,10 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.5.1",
     "axios": "^1.7.9",
+    "firebase": "^11.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.0.2",
     "styled-components": "^6.1.13",
     "watchparty": "file:"

@@ -7,6 +7,12 @@ import Recommendation from "./components/Recommendation";
 import Player from "./components/Player";
 import Host from "./components/Host";
 import Feedback from "./components/Feedback";
+import Login from "./pages/Login";
+import MoviePage from "./pages/Movies";
+import Netflix from "./pages/Netflix";
+import Signup from "./pages/Signup";
+import TVShows from "./pages/TVShows";
+import UserListedMovies from "./pages/UserListedMovies";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -49,13 +55,20 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route exact path="/" element={<Netflix />} />
+        {/* <Route path="/home" element={<HomePage />} /> */}
         <Route path="/watchparty" element={<WatchParty />} />
         <Route exact path="/search" element={<SearchMovie />} />
         <Route exact path="/recommendation" element={<Recommendation />} />
         <Route exact path="/player" element={<Player />} />
         <Route exact path="/host" element={<Host />} />
         <Route exact path="/feedback" element={<Feedback />} />
+        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/signup" element={<Signup />} />
+        <Route exact path="/tv" element={<TVShows />} />
+        <Route exact path="/movies" element={<MoviePage />} />
+        <Route exact path="/new" element={<Player />} />
+        <Route exact path="/mylist" element={<UserListedMovies />} />
       </Routes>
     </Router>
   );
