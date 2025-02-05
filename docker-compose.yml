@@ -4,7 +4,7 @@ services:
   ott-client:
     build: ./ott-client
     ports:
-      - "3000:81"
+      - "3000:80"
     depends_on:
       - node-server
 
