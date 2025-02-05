@@ -16,7 +16,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy the build output to Nginx
-COPY --from=builder /app/dist /usr/share/nginx/html/ott
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Expose the port
 EXPOSE 80

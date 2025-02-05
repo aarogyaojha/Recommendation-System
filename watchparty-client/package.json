@@ -2,7 +2,6 @@
   "name": "watchparty",
   "private": true,
   "version": "0.0.0",
-  "homepage": "/ott",
   "type": "module",
   "scripts": {
     "dev": "vite",
