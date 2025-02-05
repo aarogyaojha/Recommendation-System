@@ -247,7 +247,7 @@ def main():
                 user_country = preferences['production_countries']
                 
                 # Get recommendations
-                recommendations = recommend_movies(df, tfidf, user_type, user_genres, user_runtime, user_country, num_results=10)
+                recommendations = recommend_movies(df, tfidf, user_type, user_genres, user_runtime, user_country, num_results=5)
                 
                 if recommendations.empty:
                     print("No recommendations found based on the current preferences.")
