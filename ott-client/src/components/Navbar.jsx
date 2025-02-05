@@ -28,7 +28,7 @@ export default function Navbar({ isScrolled }) {
       console.error('Error executing script:', error);
   }
     setTimeout(() => {
-      window.location.href = "http://soulfulswings.publicvm.com:4000/watchparty";
+      window.location.href = "http://soulfulswings.publicvm.com:4000";
     }, 5000);
   };
 
