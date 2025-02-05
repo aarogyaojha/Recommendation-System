@@ -6,6 +6,8 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN python train.py 
+
 COPY . .
 
-CMD ["python", "final.py"]
+CMD ["python", "prev.py"]
