@@ -80,7 +80,8 @@ app.get('/api/weather', async (req, res) => {
 // POST API to save responses and extract keywords
 app.post("/api/save-responses", async (req, res) => {
   const { responses } = req.body;
-
+  console.log("save-responses", responses);
+  
   if (!responses || !Array.isArray(responses)) {
     return res.status(400).json({ error: "Invalid request body. Expecting 'responses' array." });
   }
@@ -103,7 +104,6 @@ app.get("/api/test", (req, res) => {
   res.send("Node.js is working!");
 });
 
-
 // GET API to retrieve the saved responses
 app.get("/api/get-responses", (req, res) => {
   if (keywordMappingCache.length === 0) {
@@ -117,6 +117,7 @@ app.get("/api/get-responses", (req, res) => {
 // POST API to accept and store data
 app.post("/api/data", (req, res) => {
   const data = req.body; // Body of the request
+  console.log("Data",data);
   
   // Check if the data is an array
   if (!Array.isArray(data)) {

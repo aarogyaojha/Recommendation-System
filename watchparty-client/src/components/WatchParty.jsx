@@ -29,7 +29,7 @@ const WatchParty = () => {
 
   const sendResponsesToApi = async (responses) => {
     try {
-      const response = await fetch("http://soulfulswings.publicvm.com:5000/api/save-responses", {
+      const response = await fetch("https://soulfulswings.publicvm.com/api/save-responses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ responses }),
