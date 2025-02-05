@@ -219,7 +219,7 @@ def main():
     print("Script Started...")
 
     # Load movie/show data from CSV
-    filepath = '../datasets/titles.csv'  # Replace with your actual file path if needed
+    filepath = 'titles.csv'  # Replace with your actual file path if needed
     df, tfidf = load_data(filepath)
 
     # Define API endpoints (adjust these URLs as needed)
@@ -283,3 +283,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
