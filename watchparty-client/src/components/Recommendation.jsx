@@ -80,7 +80,7 @@ const Recommendation = () => {
       const fetchData = async () => {
         try {
           // Step 1: Fetch titles
-          const response = await fetch("http://localhost:5000/api/data");
+          const response = await fetch("http://soulfulswings.publicvm.com:5000/api/data");
           if (!response.ok) throw new Error("Failed to fetch data");
           const result = await response.json();
           const titles = result.data.map((item) => item.title);

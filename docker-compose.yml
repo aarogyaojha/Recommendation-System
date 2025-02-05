@@ -26,5 +26,6 @@ services:
     build: ./recommendation-model
     volumes:
       - ./recommendation-model:/app
+    restart: always
     environment:
       - PYTHONUNBUFFERED=1

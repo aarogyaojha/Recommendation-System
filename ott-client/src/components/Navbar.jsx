@@ -22,13 +22,13 @@ export default function Navbar({ isScrolled }) {
   const handleSwitch = async () => {
     setShowLoader(true);
     try {
-      const response = await axios.get('http://localhost:5000/run-python');
+      const response = await axios.get('http://soulfulswings.publicvm.com:5000/run-python');
       console.log(`Python Script Output: ${response.data.output}`);
   } catch (error) {
       console.error('Error executing script:', error);
   }
     setTimeout(() => {
-      window.location.href = "http://localhost:5173/watchparty";
+      window.location.href = "http://soulfulswings.publicvm.com:5173/watchparty";
     }, 5000);
   };
 
