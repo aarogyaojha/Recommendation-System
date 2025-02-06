@@ -223,8 +223,8 @@ def main():
     df, tfidf = load_data(filepath)
 
     # Define API endpoints (adjust these URLs as needed)
-    api_url_get = "https://soulfulswings.publicvm.com/api/get-responses"  # Fetch user responses
-    api_url_post = "https://soulfulswings.publicvm.com/api/data"           # Send recommendations
+    api_url_get = "http://localhost:5000/api/get-responses"  # Fetch user responses
+    api_url_post = "http://localhost:5000/api/data"           # Send recommendations
     
     while True:
         try:

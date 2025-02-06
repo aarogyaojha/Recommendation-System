@@ -17,6 +17,9 @@ const Feedback = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmitted(true);
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 5000);
   };
 
   return (

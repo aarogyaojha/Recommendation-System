@@ -131,8 +131,8 @@ def transform_preferences(api_data):
     
     return preferences
 # API endpoints
-api_url_get = "https://soulfulswings.publicvm.com/api/get-responses"  # Replace with your API link
-api_url_post = "https://soulfulswings.publicvm.com/api/data"  # Replace with your API link
+api_url_get = "http://localhost:5000/api/get-responses"  # Replace with your API link
+api_url_post = "http://localhost:5000/api/data"  # Replace with your API link
 while True:
     try:
         # Fetch preferences dynamically from the API
